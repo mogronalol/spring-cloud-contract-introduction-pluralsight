@@ -17,19 +17,12 @@ public class CreditCheckGateway {
         this.creditcheckserviceBaseUrl = creditcheckserviceBaseUrl;
     }
 
-    public CreditCheckResponse doCreditCheckForCitizen(int citizenNumber) {
+    public CreditCheckResponse.Score doCreditCheckForCitizen(int citizenNumber) {
         final String uri = UriComponentsBuilder.fromHttpUrl(creditcheckserviceBaseUrl)
                 .path("credit-scores")
                 .toUriString();
 
-        final CreditCheckRequest request = new CreditCheckRequest(citizenNumber);
-        final CreditCheckResponse creditCheckResponse = restTemplate.postForObject(uri, request, CreditCheckResponse.class);
-
-        if (!creditCheckResponse.getUuid().equals(request.getUuid())) {
-            throw new RuntimeException("If these don't match something horrible happens");
-        }
-
-        return creditCheckResponse;
+        return restTemplate.postForObject(uri, new CreditCheckRequest(citizenNumber), CreditCheckResponse.class).getScore();
     }
 
 }

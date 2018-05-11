@@ -9,12 +9,11 @@ import org.springframework.cloud.contract.stubrunner.spring.AutoConfigureStubRun
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -37,25 +36,11 @@ public class CreditcardserviceApplicationTests {
                         ))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status", is("GRANTED")))
-                .andExpect(jsonPath("$.uuid", is(notNullValue())))
+                .andExpect(content()
+                        .json("{" +
+                                "\"status\":\"GRANTED\"" +
+                                "}"))
                 .andExpect(content().contentTypeCompatibleWith(APPLICATION_JSON));
     }
 
-    @Test
-    public void shouldDenyApplicationWhenCreditScoreIsLow() throws Exception {
-        mockMvc.perform(
-                post("/credit-card-applications")
-                        .contentType(APPLICATION_JSON)
-                        .content("{" +
-                                "\"citizenNumber\": 4444," +
-                                "\"cardType\": \"GOLD\"" +
-                                "}"
-                        ))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status", is("DENIED")))
-                .andExpect(jsonPath("$.uuid", is(notNullValue())))
-                .andExpect(content().contentTypeCompatibleWith(APPLICATION_JSON));
-    }
 }
